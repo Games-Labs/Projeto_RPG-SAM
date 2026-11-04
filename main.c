@@ -1,50 +1,11 @@
+#include "entrada.h"
+#include "menu_bestiario.h"
+#include "menu_encontro.h"
 #include "personagem.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-
-static void limpar_entrada(void) {
-    int caractere;
-    while ((caractere = getchar()) != '\n' && caractere != EOF) {
-    }
-}
-
-static int ler_inteiro(const char *mensagem) {
-    int valor;
-    int lidos;
-
-    do {
-        printf("%s", mensagem);
-        lidos = scanf("%d", &valor);
-        if (lidos == EOF) {
-            printf("\nEntrada encerrada.\n");
-            return 0;
-        }
-        limpar_entrada();
-        if (lidos != 1) {
-            printf("Entrada invalida. Digite um numero inteiro.\n");
-        }
-    } while (lidos != 1);
-
-    return valor;
-}
-
-static void ler_texto(const char *mensagem, char destino[], int tamanho) {
-    size_t tamanho_lido;
-
-    printf("%s", mensagem);
-    if (fgets(destino, tamanho, stdin) == 0) {
-        destino[0] = '\0';
-        return;
-    }
-
-    tamanho_lido = strlen(destino);
-    if (tamanho_lido > 0 && destino[tamanho_lido - 1] == '\n') {
-        destino[tamanho_lido - 1] = '\0';
-    } else {
-        limpar_entrada();
-    }
-}
 
 static void exibir_opcoes_raca(void) {
     printf("Racas: 1-Humano 2-Elfo 3-Anao 4-Halfling 5-Orc\n");
@@ -182,14 +143,30 @@ static void exibir_menu_principal(void) {
     printf("8 - Equipar item\n");
     printf("9 - Desequipar item\n");
     printf("10 - Exibir atributos totais\n");
+    printf("11 - Bestiario\n");
+    printf("12 - Encontros\n");
     printf("0 - Encerrar\n");
 }
 
-int main(void) {
+int main(int argc, char *argv[]) {
     CadastroPersonagens cadastro;
+    Bestiario bestiario;
+    EstadoEncontro encontro;
+    unsigned int semente;
     int opcao;
 
+    if (argc > 1) {
+        semente = (unsigned int)strtoul(argv[1], 0, 10);
+        inicializaAleatorio(semente);
+    } else {
+        semente = inicializaAleatorioPorTempo();
+    }
+    printf("Semente aleatoria: %u\n", semente);
+
     cadastro_inicializar(&cadastro);
+    inicializaBestiario(&bestiario);
+    inicializaEstadoEncontro(&encontro);
+    carregarBestiarioInicial(&bestiario);
 
     do {
         exibir_menu_principal();
@@ -245,6 +222,10 @@ int main(void) {
             if (personagem != 0) {
                 personagem_exibir_atributos_totais(personagem);
             }
+        } else if (opcao == 11) {
+            menuBestiario(&bestiario);
+        } else if (opcao == 12) {
+            menuEncontro(&encontro, &cadastro, &bestiario);
         } else if (opcao != 0) {
             printf("Opcao invalida.\n");
         }
