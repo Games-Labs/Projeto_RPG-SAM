@@ -1,6 +1,9 @@
+#include "texto.h"
+
 #include "menu_bestiario.h"
 
 #include "entrada.h"
+#include "tela.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -27,7 +30,9 @@ static void listarFiltrados(const Monstro *lista[], int quantidade) {
         return;
     }
     for (i = 0; i < quantidade; i++) {
-        printf("%3d | %-24s | %-11s | %s\n", lista[i]->id, lista[i]->nome,
+        printf("%3d | ", lista[i]->id);
+        texto_imprime_alinhado(stdout, lista[i]->nome, 24);
+        printf(" | %-11s | %s\n",
                frequenciaParaTexto(lista[i]->frequencia), atividadeParaTexto(lista[i]->atividade));
     }
     printf("Total: %d monstro(s).\n", quantidade);
@@ -197,7 +202,7 @@ static void salvarBestiario(const Bestiario *b) {
 }
 
 static void exibirMenu(void) {
-    printf("\n=== Bestiario ===\n");
+    tela_abrir_pagina("Bestiario");
     printf("1 - Consultar monstro por ID\n");
     printf("2 - Consultar monstro por nome\n");
     printf("3 - Cadastrar monstro\n");
@@ -210,7 +215,7 @@ static void exibirMenu(void) {
     printf("0 - Voltar\n");
 }
 
-void menuBestiario(Bestiario *b) {
+void menuBestiario(Bestiario *b, int estruturaBloqueada) {
     const Monstro *m;
     int opcao;
 
@@ -229,6 +234,10 @@ void menuBestiario(Bestiario *b) {
             consultarPorNome(b);
         } else if (opcao == 3) {
             cadastrarMonstro(b);
+        } else if (opcao == 4 && estruturaBloqueada) {
+            printf("Alteracao bloqueada: ha um combate em andamento.\n");
+        } else if (opcao == 5 && estruturaBloqueada) {
+            printf("Remocao bloqueada: ha um combate em andamento.\n");
         } else if (opcao == 4) {
             alterarMonstro(b);
         } else if (opcao == 5) {
@@ -243,6 +252,9 @@ void menuBestiario(Bestiario *b) {
             salvarBestiario(b);
         } else if (opcao != 0) {
             printf("Opcao invalida.\n");
+        }
+        if (opcao != 0) {
+            tela_pausar();
         }
     } while (opcao != 0);
 }

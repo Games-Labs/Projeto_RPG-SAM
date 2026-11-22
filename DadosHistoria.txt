@@ -1,0 +1,252 @@
+# Textos narrativos do jogo. Cada secao comeca com uma linha @NOME.
+# Linha em branco = pausa de 1 segundo na animacao. Linhas com # sao ignoradas.
+
+@ABERTURA
+Em um tempo distante...
+
+Em uma era onde reis governavam e lendas ganhavam vida...
+
+Existia uma cidade chamada Falmuth.
+
+Uma terra de mistérios, perigos e incontáveis possibilidades.
+
+Onde cada escolha poderia mudar o destino de muitos.
+
+Mas antes de sua jornada começar...
+
+Uma pergunta precisa ser respondida.
+
+Você deseja escrever o destino deste mundo... ou permitir que ele escreva o seu?
+
+[1] — Quero ter o poder de moldar este mundo ao meu desejo. (Sistema Auxiliar de Mestre de RPG)
+
+[2] — Quero descobrir o que o destino reservou para mim. (Modo história comum)
+
+@ESCOLHA_MESTRE
+Então, deseja assumir o controle...
+
+As regras, os caminhos e até mesmo o destino estarão em suas mãos.
+
+Falmuth será aquilo que você decidir que ela seja.
+
+@ESCOLHA_HISTORIA
+Então, permita que o destino siga seu curso...
+
+Nem tudo estará sob seu controle. Existem histórias que precisam ser vividas, mistérios que precisam ser revelados e escolhas cujas consequências você ainda desconhece.
+
+Mas não estará sozinho nessa jornada.
+
+Para auxiliar na condução desta aventura, apresento o SAM — Sistema Auxiliar de Mestre, uma ferramenta desenvolvida para apoiar a narração, organizar acontecimentos, gerenciar informações e auxiliar na construção de uma experiência de RPG mais dinâmica e imersiva.
+
+O SAM estará presente nos bastidores, auxiliando o Mestre a conduzir o mundo, acompanhar os acontecimentos e manter a coerência da história. Entretanto, lembre-se: ele é apenas um auxiliar. O verdadeiro destino de Falmuth será construído pelas suas escolhas.
+
+Sua jornada em Falmuth está prestes a começar...
+
+Que os dados decidam o que o destino reserva.
+
+@PROLOGO
+FALMUTH — Crônicas de um Destino Esquecido
+Prólogo — Antes que tudo tivesse um nome
+
+Muito antes da existência dos grandes reinos, antes que reis erguessem seus castelos e que homens disputassem territórios em nome de suas coroas, o mundo era um lugar desconhecido.
+
+As terras eram vastas, os oceanos permaneciam inexplorados e criaturas que hoje são consideradas lendas caminhavam livremente pelo mundo.
+
+Naquela época, a magia não era um segredo. Ela fazia parte da própria natureza, presente nas florestas, nas montanhas, nos rios e até mesmo nos seres vivos.
+
+Entretanto, nem todos enxergavam aquele poder como uma dádiva.
+
+Com o passar dos séculos, surgiram aqueles que desejavam dominar a magia e utilizá-la para controlar tudo aquilo que existia.
+
+Reinos foram erguidos. Alianças foram quebradas. Guerras devastaram territórios inteiros.
+
+E, lentamente, o mundo começou a esquecer suas próprias origens.
+
+@CAPITULO_1
+Capítulo I — O nascimento de Falmuth
+
+Entre montanhas, florestas e extensas planícies, surgiu uma cidade que futuramente se tornaria conhecida como Falmuth.
+
+Inicialmente, era apenas um pequeno povoado, habitado por comerciantes, agricultores, artesãos e viajantes que procuravam um lugar para recomeçar suas vidas.
+
+Sua localização privilegiada transformou-a rapidamente em um importante centro comercial.
+
+Com o crescimento vieram a riqueza, a influência e, naturalmente, o poder.
+
+Novas construções foram erguidas, muralhas protegeram seus habitantes e um castelo passou a representar a autoridade de seus governantes.
+
+Falmuth prosperou.
+
+Mas nem tudo era tão grandioso quanto aparentava.
+
+Nas regiões mais afastadas, relatos sobre criaturas desconhecidas começaram a se espalhar. Viajantes desapareciam nas estradas, antigas ruínas eram encontradas e histórias sobre forças sobrenaturais voltaram a circular entre os habitantes.
+
+Alguns diziam que eram apenas lendas.
+
+Outros acreditavam que algo muito antigo estava despertando.
+
+@CAPITULO_2
+Capítulo II — Uma paz construída sobre segredos
+
+Durante muitos anos, Falmuth viveu um período de estabilidade.
+
+O comércio floresceu, as famílias prosperaram e diferentes povos passaram a compartilhar suas tradições dentro das muralhas da cidade.
+
+Entretanto, por trás da aparente tranquilidade, interesses começaram a entrar em conflito.
+
+Nobres disputavam influência sobre a coroa. Comerciantes buscavam controlar as rotas comerciais. Grupos clandestinos realizavam negociações nas sombras, enquanto estudiosos investigavam conhecimentos que deveriam permanecer esquecidos.
+
+O poder nunca esteve concentrado em apenas uma pessoa.
+
+E nem todos desejavam que a paz continuasse.
+
+Boatos sobre uma antiga força começaram a surgir novamente. Alguns afirmavam que ela poderia conceder poderes inimagináveis. Outros diziam que sua descoberta seria capaz de destruir tudo aquilo que havia sido construído.
+
+O que ninguém sabia era que os acontecimentos atuais faziam parte de algo muito maior.
+
+@CAPITULO_3
+Capítulo III — O início de uma nova era
+
+É neste mundo que sua história começa.
+
+Você não é necessariamente um herói, um escolhido ou alguém destinado a salvar o mundo.
+
+Pode ser um viajante em busca de riquezas, um guerreiro atrás de reconhecimento, um comerciante tentando construir seu próprio império ou simplesmente alguém que deseja encontrar seu lugar em Falmuth.
+
+Seu passado pertence a você.
+
+Suas motivações também.
+
+O mundo continuará existindo independentemente de suas decisões. Reis continuarão governando, comerciantes continuarão negociando, guerras poderão começar e terminar, e pessoas terão seus próprios objetivos.
+
+Você poderá interferir nesses acontecimentos ou simplesmente observá-los.
+
+Mas tenha cuidado: nem todas as consequências serão previsíveis.
+
+Uma pequena decisão poderá transformar uma amizade em rivalidade, uma negociação em guerra ou um desconhecido em alguém fundamental para seu destino.
+
+Em Falmuth, ninguém conhece verdadeiramente o futuro. Nem mesmo aqueles que acreditam controlá-lo.
+
+@CAPITULO_4
+Capítulo IV — O destino está em suas mãos
+
+Agora, resta apenas uma coisa.
+
+O mundo está diante de você, repleto de possibilidades, personagens, histórias e acontecimentos ainda não revelados.
+
+Não existe uma única maneira de viver em Falmuth.
+
+Você poderá seguir os caminhos conhecidos ou criar caminhos que jamais existiram.
+
+Poderá construir um reino, derrubar uma monarquia, descobrir civilizações esquecidas ou simplesmente viver uma vida tranquila em uma pequena vila.
+
+Entretanto, existe uma diferença fundamental entre conhecer uma história e escrever uma.
+
+E essa escolha pertence exclusivamente a você.
+
+Falmuth está esperando.
+
+Que os próximos acontecimentos sejam lembrados como o início de uma grande história.
+
+# Missoes. Secoes MISSAO_P<n>_INICIO e MISSAO_P<n>_FIM pertencem a linha principal;
+# MISSAO_S<n>_INICIO e MISSAO_S<n>_FIM as historias secundarias.
+
+@MISSAO_P1_INICIO
+Missão principal I — Os desaparecidos da estrada
+
+Há três noites, uma caravana que vinha do sul não chegou aos portões de Falmuth.
+
+Os guardas dizem que foi apenas um atraso. Os comerciantes, que perderam parentes nela, pensam diferente.
+
+Um deles procura alguém disposto a seguir as marcas de rodas pela planície e descobrir o que aconteceu.
+
+@MISSAO_P1_FIM
+Entre as carroças tombadas, o grupo encontra sobreviventes assustados e algo que ninguém esperava: um disco de pedra coberto de símbolos, ainda morno ao toque.
+
+Os sobreviventes juram que as criaturas não queriam ouro. Queriam o disco.
+
+De volta à cidade, um velho livreiro reconhece os símbolos e abre, com as mãos trêmulas, o primeiro volume das crônicas de Falmuth.
+
+@MISSAO_P2_INICIO
+Missão principal II — Segredos sob as ruínas
+
+O livreiro afirma que o disco é uma chave, e que a porta fica nas ruínas ao norte, erguidas antes mesmo de Falmuth ter um nome.
+
+Estudiosos da cidade já enviaram gente para lá. Ninguém voltou com respostas.
+
+Se há algo despertando sob aquelas pedras, é melhor que seja encontrado por quem não pretende vendê-lo.
+
+@MISSAO_P2_FIM
+A porta se abre com um som que parece um suspiro.
+
+Lá dentro não há tesouro, apenas paredes cobertas de registros: nomes de famílias, selos de nobres e datas de pagamentos. Alguém em Falmuth financia escavações há anos.
+
+A paz da cidade foi construída sobre segredos, e o grupo acaba de ler alguns deles.
+
+@MISSAO_P3_INICIO
+Missão principal III — O pacto nas sombras
+
+Os selos encontrados nas ruínas pertencem a gente poderosa, e gente poderosa não gosta de ser lida.
+
+Nas ruas estreitas de Falmuth, alguém passou a seguir o grupo. Um bilhete deixado na estalagem marca um encontro para depois do toque de recolher.
+
+Pode ser um aliado. Pode ser uma emboscada. Só há um jeito de saber.
+
+@MISSAO_P3_FIM
+Era uma emboscada, mas quem a preparou não contava com a resistência do grupo.
+
+Entre os pertences dos atacantes há um contrato: os conspiradores não querem estudar a magia antiga. Querem acordá-la, e já sabem onde ela dorme.
+
+A partir desta noite, a história de Falmuth também é a história do grupo.
+
+@MISSAO_P4_INICIO
+Missão principal IV — O despertar da magia antiga
+
+Sob as montanhas, numa caverna que nenhum mapa registra, o disco de pedra começa a brilhar sozinho.
+
+Os conspiradores chegaram antes. O ritual já começou, e o que responde ao chamado não tem a intenção de obedecer a ninguém.
+
+Não haverá outra chance de impedir que o mundo se lembre, da pior maneira, de suas próprias origens.
+
+@MISSAO_P4_FIM
+O último guardião cai, e o brilho do disco se apaga devagar, como uma brasa.
+
+A magia antiga não foi destruída. Voltou a dormir, e agora o grupo conhece o caminho até ela.
+
+Falmuth amanhece sem saber o quanto esteve perto do fim. O que será feito desse segredo é uma escolha que pertence apenas a quem o carrega.
+
+@MISSAO_S1_INICIO
+História secundária — A carga perdida do comerciante
+
+Um comerciante da praça jura que sua carroça de tecidos foi abandonada na floresta quando os cavalos se assustaram.
+
+Ele paga bem a quem trouxer a carga de volta, e paga adiantado a quem não fizer perguntas sobre o que mais havia nela.
+
+@MISSAO_S1_FIM
+A carga está intacta, e entre os tecidos há apenas tecidos.
+
+O comerciante paga o combinado, visivelmente aliviado. Algumas histórias são exatamente o que parecem.
+
+@MISSAO_S2_INICIO
+História secundária — O eremita do pântano
+
+Dizem que um eremita vive no pântano e conhece ervas que curam qualquer febre.
+
+O hospital de Falmuth precisa dele, mas o caminho até sua cabana anda cheio de coisas que não gostam de visitas.
+
+@MISSAO_S2_FIM
+O eremita agradece com poucas palavras e um saco de ervas amargas.
+
+Antes de o grupo partir, ele comenta que os bichos do pântano andam inquietos desde que a terra começou a tremer ao norte.
+
+@MISSAO_S3_INICIO
+História secundária — Ecos na montanha
+
+Pastores contam que, à noite, a montanha repete vozes que ninguém pronunciou.
+
+A guarda não tem homens para investigar superstições. O grupo tem tempo, armas e curiosidade.
+
+@MISSAO_S3_FIM
+Os ecos vinham de uma fenda aberta por um deslizamento, onde criaturas tinham feito ninho.
+
+Com o ninho desfeito, a montanha volta ao silêncio. Os pastores, por via das dúvidas, continuam evitando o lugar.

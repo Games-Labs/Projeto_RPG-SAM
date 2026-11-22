@@ -1,6 +1,8 @@
 #ifndef MONSTRO_H
 #define MONSTRO_H
 
+#include "dados.h"
+
 #define MAX_CLIMAS 5
 #define MAX_TERRENOS 8
 #define MAX_MOVIMENTOS 4
@@ -17,9 +19,6 @@
 
 #define NUM_CAMPOS_MONSTRO 38
 
-#define DADO_QUANTIDADE_MAXIMA 100
-#define DADO_FACES_MAXIMAS 1000
-#define DADO_MODIFICADOR_MAXIMO 1000
 #define DADOS_VIDA_FACES 8
 
 #define CA_MINIMA 0
@@ -193,12 +192,6 @@ DECLARA_ENUM(EixoOrdem, eixoOrdem)
 DECLARA_ENUM(EixoMoral, eixoMoral)
 
 typedef struct {
-    int quantidade;
-    int faces;
-    int modificador;
-} Dado;
-
-typedef struct {
     TipoMovimento tipo;
     int deslocamento;
     Manobrabilidade manobrabilidade;
@@ -283,10 +276,6 @@ typedef struct {
 
     PoderEncontro poder;
 } Monstro;
-
-int converteTextoDado(const char *texto, Dado *dado);
-void dadoParaTexto(Dado dado, char *destino, int tamanho);
-int validaDado(Dado dado);
 
 int validaMonstro(const Monstro *m);
 int validaMonstroMotivo(const Monstro *m, char *motivo, int tamanho);

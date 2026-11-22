@@ -1,124 +1,350 @@
-Sistema Auxiliar de Mestre de RPG - Algoritmos 2
+# Sistema Auxiliar de Mestre de RPG - SAM
 
-Identificacao da equipe
-Mathias Silva Cunha (Unico)
+Projeto desenvolvido em **C (C11)** para a disciplina de Algoritmos 2.
 
-Erros encontrados:
-- Reportado; falta de validação na entrada de itens (Lu)
-- Checar se o "Inventario" (se pode se chamar disso) Funciona
-- Reportado; Adicionar integração ABNT pois o "Bestiario" tem letras com acentos incompartiveis em C. (Lu)
+## Equipe
 
-Estrutura do projeto
-- item.h / item.c: definem o tipo Item, TipoItem, validacao e nomes textuais dos tipos.
-- inventario.h / inventario.c: controlam o vetor de itens, ocupacao por espacos, busca, insercao, remocao e listagem.
-- personagem.h / personagem.c: definem fichas, cadastro, equipamentos, CRUD, equipar, desequipar e calculo de atributos totais.
-- monstro.h / monstro.c: enums do bestiario (com conversao texto<->enum), Dado, Monstro, validacao, exibicao e consultas ecologicas.
-- monstro_campos.c: tabela chave=valor de cada campo do Monstro (interpretacao e gravacao), usada pelo carregamento, salvamento e edicao.
-- bestiario.h / bestiario.c: Bestiario (ate 100 monstros), carga/gravacao de arquivo, mini-CRUD e filtros.
-- dados.h / dados.c: semente, sorteio de inteiros e rolagem de Dado.
-- grupo.h / grupo.c: grupo de 1 a 6 aventureiros e poder do grupo.
-- encontro.h / encontro.c: contexto, faixas de dificuldade, filtro, poderes, sorteio ponderado, geracao e escolha de propostas.
-- entrada.h / entrada.c: leitura segura de inteiros e textos.
-- menu_bestiario.h / .c e menu_encontro.h / .c: menus do TP-2 e do TP-3 (clientes dos modulos).
-- main.c: menu principal (opcoes 1 a 10 do TP-1, 11 Bestiario, 12 Encontros).
-- DadosBestiario.txt: bestiario oficial (50 monstros). bestiario-saida.txt: arquivo produzido pela operacao de salvar.
+- **Mathias Silva Cunha** — desenvolvimento individual.
 
-Comando de compilacao
-gcc -std=c11 -Wall -Wextra -pedantic main.c personagem.c inventario.c item.c monstro.c monstro_campos.c bestiario.c dados.c grupo.c encontro.c entrada.c menu_bestiario.c menu_encontro.c -o personagens_temp; .\personagens_temp.exe [semente]
+## Sobre o projeto
 
-O argumento opcional [semente] fixa a sequencia pseudoaleatoria (testes reproduziveis).
+O programa possui dois modos principais:
 
-O exe pre-compilado personagens.exe esta somente na versao do github para evitar problemas na entrega do classroom!
+- **Sistema Auxiliar de Mestre:** reúne as ferramentas para cadastrar personagens, organizar equipamentos, consultar o bestiário, montar encontros e executar combates.
+- **Modo História:** permite criar heróis, explorar o mundo de Falmuth, cumprir missões, visitar locais da cidade e acompanhar a progressão do grupo.
 
-Execucao
-No Windows/PowerShell:
-.\personagens_temp.exe
+O projeto foi dividido em módulos para separar as regras do jogo, o armazenamento dos dados e os menus.
 
-No Linux/macOS:
-./personagens_temp
+## Como compilar e executar
 
-Decisoes relevantes
-- O cadastro suporta ate 20 personagens por meio da constante CADASTRO_MAX_PERSONAGENS.
-- Cada inventario aceita ate 50 itens e ate 50 espacos consumidos, usando INVENTARIO_MAX_ITENS e INVENTARIO_MAX_ESPACOS.
-- Raca, classe, tipo de item, slot de equipamento e codigos de retorno usam enum.
-- O cadastro e sempre passado por parametro; nao ha variavel global para armazenar personagens.
-- Os registros de personagens e itens permanecem contiguos apos remocoes.
-- Itens equipados deixam de aparecer no inventario e nao consomem seus espacos enquanto equipados.
-- Armas de duas maos ocupam e bloqueiam as duas maos. O bonus de uma arma de duas maos e contado uma unica vez.
-- As trocas de equipamento verificam antes se o item antigo pode voltar ao inventario, preservando a atomicidade.
-- Os atributos totais sao calculados sob demanda e nao ficam armazenados como copia permanente.
-- TP-2: o carregamento nunca encerra o programa. Registros invalidos sao rejeitados e contados (Bestiario.rejeitados); o primeiro erro fica em Bestiario.primeiroErro com linha, chave e motivo. Os validos continuam carregados.
-- TP-2: faixas adotadas (o enunciado nao as define; baseadas nos extremos dos dados): CA 0..9, THAC0 9..20, inteligencia 0..15, moral 6..20, XP 1..9999. Sao constantes em monstro.h.
-- TP-2: cadastrar e alterar monstro no menu usam linhas chave=valor (o mesmo formato do arquivo). Ao cadastrar e possivel copiar um monstro modelo e informar so as chaves que mudam.
-- TP-3: poderTotal do GrupoAventura e recalculado a partir das fichas por calculaPoderGrupo (chamada antes de cada geracao); removePersonagemGrupo nao o recalcula por nao receber o cadastro.
-- TP-3: escolheProposta recebe o numero exibido (1 a 3) e guarda indiceEscolhido = numero - 1 (inicial -1).
+### Requisitos
 
+- GCC com suporte a C11.
+- No Windows, MinGW para usar o `mingw32-make`.
+- No Linux, `make` e, para reprodução dos sons, `aplay` ou `paplay`.
 
+### Compilação
 
-Checklist do TP-1 (Principais pedidos.)
-- [x] Struct de personagem com todos os campos obrigatorios.
-- [x] Cadastro com vetor estatico, quantidade e capacidade maxima 20.
-- [x] Validacao de ID positivo, nome, raca, classe, nivel, PV, ataque, defesa, iniciativa e poder.
-- [x] CRUD de personagens com ID unico e remocao contigua.
-- [x] Struct de item com ID, nome, tipo, espacos, bonus e poder.
-- [x] Inventario com capacidade de 50 espacos calculada por funcao.
-- [x] Adicao, busca, remocao, listagem e ocupacao do inventario.
-- [x] Equipamentos fixos: elmo, peitoral, manoplas, calca, botas, anel, colar, cinto e duas maos.
-- [x] Compatibilidade entre tipo de item e slot de equipamento.
-- [x] Regra de arma de duas maos bloqueando as duas maos.
-- [x] Desequipar recusado quando nao ha espaco suficiente no inventario.
-- [x] Calculo de ataque, defesa, iniciativa, PV maximos e poder totais usando apenas itens equipados.
-- [x] Interface publica em personagem.h e implementacao em personagem.c.
-- [x] Separacao adicional em item.h/.c e inventario.h/.c.
-- [x] Menu textual com todas as operacoes minimas exigidas.
-- [x] Leitura textual com fgets, sem uso de gets.
+Na pasta principal do projeto, execute:
 
-Checklist do TP-2 (Principais pedidos.)
-Fase A - Desenvolvimento
-- [x] monstro.h/.c: enums (Frequencia, Clima, Terreno, Atividade, Dieta, TipoMovimento, Manobrabilidade, Tamanho, TipoEspecial, EixoOrdem, EixoMoral) com conversao texto<->enum e validacao (sec. 3, 4, 7.1).
-- [x] Structs Dado, Movimento, Ataque, HabilidadeEspecial, Tendencia, PoderEncontro e Monstro (sec. 3 e 4).
-- [x] converteTextoDado, dadoParaTexto, validaDado (4d10, 1d8-1, 2d4+2) (sec. 7.1).
-- [x] bestiario.h/.c: Bestiario com ate 100 monstros contiguos (sec. 5).
-- [x] carregaBestiario com fgets, ignorando #, linhas vazias e CR do CRLF; erro com linha/chave/motivo; sem exit (sec. 6).
-- [x] salvaBestiario recarregavel sem perda (sec. 7.2).
-- [x] validaMonstro com todas as validacoes da sec. 8.
-- [x] CRUD: insere, buscaPorId, consultaPorId, buscaPorNome, altera, remove, lista, exibe (sec. 7.3).
-- [x] Consultas: viveNoTerreno, ativoNoPeriodo, listaMonstrosPorTerreno (sec. 7.4).
-- [x] main.c com menu 1-9 e 0 (sec. 9).
-Fase B - Testes
-- [x] Carregar DadosBestiario.txt: 50 registros validos.
-- [x] Goblin por ID e por nome; ID inexistente; ID repetido; remover do meio; FLORESTA+NOTURNO.
-- [x] resistenciaMagia=101 recusada; arquivo inexistente; bloco sem [/MONSTRO]; salvar e recarregar.
-Fase C - Validacao
-- [x] Compilacao sem warnings; bestiario-saida.txt gerado; README.txt/README.md atualizado.
+```bash
+mingw32-make
+```
 
-Checklist do TP-3 (Principais pedidos.)
-Evidencias: ver "Resultado dos testes" no fim deste arquivo.
-Fase A - Desenvolvimento
-- [x] grupo.h/.c: GrupoAventura (1 a 6, sem repeticao), inicializa, adiciona, remove, calculaPoderGrupo (recalculado), exibe (sec. 3.1, 14).
-- [x] dados.h/.c: rolaDado, semente unica e semente fixa para testes (sec. 7, passo 4).
-- [x] encontro.h/.c: Dificuldade, Periodo, ContextoEncontro, calculaFaixaDificuldade com aritmetica inteira (sec. 4).
-- [x] monstroCompativel e filtraCandidatos; erro especifico sem candidatos (sec. 5).
-- [x] sorteiaMonstroPonderado com pesos 1/2/4/8/12 (sec. 6).
-- [x] poderIndividualContextual, poderComponente, calculaPoderEncontro; 5 Goblins em floresta a noite = 36 (sec. 8).
-- [x] tentaGerarEncontro (ate 4 especies, sem especie repetida, rejeicao sem truncar) e geraPropostas (ate 500 tentativas, 3 propostas distintas, diagnostico) (sec. 10, 11).
-- [x] encontrosIguais (independe da ordem), escolheProposta (indice inicial -1), exibeEncontro (sec. 9, 14).
-- [x] main.c com menu 1-7 e 0 (sec. 15).
-Fase B - Testes
-- [x] Poder 40: faixas 24-32, 36-44, 48-60; filtro sem candidatos; sorteio com semente fixa; proposta repetida; so duas solucoes; escolha valida e invalida (sec. 17).
-Fase C - Validacao
-- [x] Compilacao sem warnings com todos os modulos; fluxo ponta a ponta; README atualizado.
+No Linux, use:
 
-Checklist do TP-4 (Principais pedidos.)
-Em breve
+```bash
+make
+```
 
-Divergencias, ambiguidades e limitacoes registradas (auditoria)
-- Dados: o enunciado cita bestiario.txt; o arquivo do projeto e DadosBestiario.txt (constante ARQUIVO_BESTIARIO em menu_bestiario.h). O arquivo usa CRLF e UTF-8; o carregador remove o CR. O codigo PASSO_ARBOREO esta no arquivo com acento (PASSO_ARBÓREO) e foi preservado exatamente; em consoles Windows sem UTF-8 (chcp 65001) os acentos das descricoes aparecem trocados.
-- Enunciado TP-2: diz "faixas adotadas no enunciado" para CA, THAC0, inteligencia, moral e XP, mas nao as define. Foram adotadas as faixas listadas em "Decisoes relevantes".
-- Enunciado TP-2: listaMonstrosPorTerreno devolve Monstro *resultado[] a partir de const Bestiario *. Para nao descartar const, o vetor de saida e const Monstro *. Foi adicionada listaMonstrosPorPeriodo para o filtro por atividade do menu.
-- Enunciado TP-2: Bestiario recebeu os campos extras rejeitados e primeiroErro (diagnostico sem I/O no modulo). Monstro.poder foi detalhado em PoderEncontro (com modTerreno por terreno).
-- Enunciado TP-2: o sufixo de manobrabilidade (VOO:12:A) e opcional; ataquesEspeciais aceita NENHUM e defesasEspeciais aceita NENHUMA (ambos tratados como lista vazia nas duas chaves). Na gravacao: NENHUM para ataques e NENHUMA para defesas. Altura e gravada com %g (1.0 vira 1), equivalente na releitura.
-- Enunciado TP-3: GrupoAventura exige o campo poderTotal armazenado, o que contraria a regra do CLAUDE.md de nao guardar valores derivados. Mantido o campo por exigencia do enunciado, sempre recalculado.
-- Enunciado TP-3: os enums Dificuldade e Periodo comecam em 1 (convencao do projeto) em vez de 0.
-- Enunciado TP-3: a quantidade rolada de numeroEncontrado (ex.: 4d10 Goblins) frequentemente excede a faixa de poder e a tentativa e rejeitada, como manda o enunciado (sem truncar). Por isso os exemplos de referencia (5 Goblins, poder 36) nao sao gerados na pratica; ja o calculo e verificado (5 Goblins em floresta a noite = 36). Para grupos de poder muito alto (ex.: 1000) o limite de 4 especies e 50 monstros impede propostas e o sistema informa zero propostas.
-- personagens.exe e a versao TP-1 e nao foi recompilado.0
+Também é possível compilar manualmente no Windows:
+
+```powershell
+gcc -std=c11 -Wall -Wextra -pedantic main.c personagem.c inventario.c item.c monstro.c monstro_campos.c bestiario.c dados.c grupo.c encontro.c combate.c texto.c entrada.c menu_bestiario.c menu_encontro.c menu_combate.c persistencia.c tela.c catalogo.c cidade.c menu_cidade.c historia.c menu_historia.c som.c -o personagens -lwinmm
+```
+
+### Execução
+
+Windows (PowerShell):
+
+```powershell
+.\personagens.exe
+```
+
+Linux/macOS:
+
+```bash
+./personagens
+```
+
+O programa também aceita uma semente opcional para controlar a sequência pseudoaleatória. Isso é útil para repetir cenários durante os testes:
+
+```powershell
+.\personagens.exe 12345
+```
+
+O repositório do GitHub contém o executável `personagens.exe` já compilado. Ele foi mantido lá para facilitar a execução e evitar problemas com a entrega pelo Classroom.
+
+## Organização dos arquivos
+
+| Arquivo / módulo | Responsabilidade |
+|---|---|
+| `item.h/.c` | Tipos de item, validações e nomes dos tipos. |
+| `inventario.h/.c` | Inserção, remoção, busca, listagem e controle dos espaços ocupados. |
+| `personagem.h/.c` | Fichas, cadastro, equipamentos, operações CRUD e cálculo dos atributos totais. |
+| `monstro.h/.c` | Estruturas e enums do bestiário, conversões, validações e consultas ecológicas. |
+| `monstro_campos.c` | Leitura e gravação dos campos do monstro no formato chave=valor. |
+| `bestiario.h/.c` | Armazenamento de até 100 monstros, leitura, gravação, CRUD e filtros. |
+| `dados.h/.c` | Dados, conversões, validação, sementes e rolagens. |
+| `grupo.h/.c` | Grupo de 1 a 6 aventureiros e cálculo de poder. |
+| `encontro.h/.c` | Contexto, dificuldade, filtros, sorteio ponderado e geração de propostas. |
+| `combate.h/.c` | Preparação e execução de combates, turnos, rodadas, dano, histórico e resultados. |
+| `texto.h/.c` | Contagem de caracteres UTF-8 e alinhamento de colunas. |
+| `entrada.h/.c` | Leitura e validação de entradas e configuração do console em UTF-8. |
+| `menu_bestiario.h/.c` | Menu do bestiário. |
+| `menu_encontro.h/.c` | Menu de encontros. |
+| `menu_combate.h/.c` | Menu de combate. |
+| `persistencia.h/.c` | Salvamento e carregamento de personagens e jogos. |
+| `tela.h/.c` | Organização das telas e mensagens no console. |
+| `catalogo.h/.c` | Leitura do catálogo de itens. |
+| `cidade.h/.c` | Serviços e locais de Falmuth. |
+| `menu_cidade.h/.c` | Menus da cidade. |
+| `historia.h/.c` | Regras e progresso do Modo História. |
+| `menu_historia.h/.c` | Menus do Modo História. |
+| `som.h/.c` | Geração e reprodução dos efeitos sonoros. |
+| `main.c` | Menu principal e inicialização do programa. |
+
+### Arquivos de dados
+
+- `DadosBestiario.txt`: bestiário inicial, com 50 monstros.
+- `bestiario-saida.txt`: arquivo gerado ao salvar o bestiário.
+- `DadosPersonagens.txt`: arquivo padrão para salvar personagens pelo menu principal.
+- `DadosHistoria.txt`: textos de abertura, capítulos e missões.
+- `DadosItens.txt`: catálogo de itens disponíveis nos estabelecimentos.
+- `DadosHistoriaSalvo.txt`: arquivo padrão de salvamento do Modo História.
+
+Há outros arquivos auxiliares no projeto que não aparecem na tabela por não serem módulos principais.
+
+## Funcionalidades
+
+### Personagens e inventário — TP-1
+
+- Cadastro de até 20 personagens, com ID único.
+- Criação, consulta, alteração e remoção de fichas.
+- Inventário com limite de 50 itens e 50 espaços ocupados.
+- Equipamentos para elmo, peitoral, manoplas, calça, botas, anel, colar, cinto e mãos.
+- Verificação de compatibilidade entre item e espaço de equipamento.
+- Armas de duas mãos ocupam as duas mãos e têm o bônus contado uma única vez.
+- Itens equipados não ocupam espaço no inventário.
+- Cálculo dos atributos totais a partir dos equipamentos.
+
+### Bestiário — TP-2
+
+- Cadastro de até 100 monstros.
+- Importação e exportação em arquivo de texto, no formato chave=valor.
+- Busca por ID e nome, alteração, remoção e listagem.
+- Filtros por terreno e período de atividade.
+- Validação dos campos durante a leitura e a edição.
+- Registros inválidos são rejeitados sem interromper o carregamento dos demais. O sistema informa a linha, a chave e o motivo do primeiro erro.
+
+O arquivo inicial possui 50 monstros válidos.
+
+### Grupos e encontros — TP-3
+
+- Grupos com 1 a 6 personagens, sem repetição.
+- Cálculo do poder total do grupo a partir das fichas.
+- Seleção de contexto por terreno, período e dificuldade.
+- Filtragem de monstros compatíveis com o contexto.
+- Sorteio ponderado de monstros.
+- Geração de até três propostas distintas de encontro.
+- Escolha de uma das propostas pelo Mestre.
+- Possibilidade de montar um encontro manualmente pelo menu.
+
+### Combate — TP-4
+
+- Preparação do combate com personagens e exemplares de monstros.
+- Rolagem de PV e iniciativa.
+- Ordem de ação com critérios de desempate definidos.
+- Verificação de acerto, dano e derrota.
+- Ataques múltiplos de monstros, respeitando a ordem cadastrada na ficha.
+- Ataques desarmados quando o personagem não possui arma.
+- Histórico de ações, resumo do combate e relatório em arquivo.
+- Atualização das fichas após o encerramento, mediante confirmação do Mestre.
+- Limite de 100 rodadas para evitar combates sem fim.
+
+O menu também permite consultar alertas de habilidades especiais. A execução automática dessas habilidades não foi implementada.
+
+### Persistência e encontros manuais
+
+- As opções 14 e 15 do menu principal salvam e carregam personagens, inventários e equipamentos em `DadosPersonagens.txt`.
+- A leitura é feita de forma atômica: se houver erro, o programa informa a linha e mantém os dados atuais.
+- O carregamento e as alterações que poderiam invalidar as fichas ficam bloqueados durante um combate em andamento.
+- Na opção 8 de encontros, o Mestre escolhe os monstros e as quantidades. O programa calcula o poder e informa se o encontro está dentro da faixa da dificuldade escolhida.
+
+### Cidade de Falmuth e Modo História
+
+As funcionalidades abaixo foram adicionadas ao projeto e não fazem parte dos enunciados TP-1 a TP-4.
+
+- Abertura com texto animado, carregado de `DadosHistoria.txt`. O jogador escolhe entre o Sistema Auxiliar de Mestre e o Modo História.
+- Telas organizadas no console, com mensagens de resultado exibidas no menu seguinte.
+- Itens do tipo runa e consumível, além dos equipamentos tradicionais.
+- Consumíveis com efeitos de cura, bônus temporário, veneno ou efeito de suspeita.
+- Moedas individuais para cada personagem.
+- Catálogo de itens com estabelecimentos associados: loja, hospital, cabana e ferreiro.
+- Compra, venda e descarte de itens.
+- Locais da cidade com serviços e eventos: loja, hospital, academia, bar, praça, cabana escura, ferreiro e ferro-velho.
+- Fuga do grupo durante o combate.
+- Recompensas em moedas e experiência.
+- Criação de heróis, formação de grupo, exploração, encontros, combate, descanso e painel do Mestre.
+- Missões principais e histórias secundárias.
+- Capítulos liberados conforme o avanço nas missões do Modo História.
+- Livraria com a história de Falmuth e opções de estudo que podem melhorar os personagens.
+- Salvamento do progresso, incluindo experiência, moedas, grupo, missões concluídas e bônus temporários.
+
+### Progressão, missões e outras adições
+
+- **Experiência e níveis:** ao vencer, a experiência dos monstros derrotados é dividida entre os personagens que permanecem de pé. A cada nível, o personagem recebe PV máximos, poder e um bônus de ataque ou defesa.
+- **Mão preferida:** personagens podem ser destros ou canhotos. Usar uma arma de uma mão na mão errada aplica penalidade aos atributos de ataque e defesa.
+- **Missões:** há quatro missões principais em sequência e três histórias secundárias. As missões principais liberam os capítulos correspondentes.
+- **Livraria:** oferece a história de Falmuth e estudos que podem conceder bônus.
+- **Painel do Mestre:** no Modo História, o acesso é feito pelo código `99`.
+- **Salvamento do jogo:** o arquivo do Modo História registra fichas, itens, XP, mão preferida, bônus temporários, grupo e missões concluídas. Arquivos de versões anteriores continuam sendo aceitos.
+
+### Sons
+
+O módulo `som.h/.c` gera efeitos sonoros sem bibliotecas de terceiros. As melodias são montadas em memória como arquivos WAV.
+
+- No Windows, a reprodução usa `PlaySound`, da biblioteca `winmm`.
+- No Linux, o programa tenta usar `aplay` ou `paplay`.
+- Se não houver um reprodutor disponível, usa a campainha do terminal.
+- Os sons são reproduzidos em eventos como abertura, vitória, derrota, fuga, subida de nível, compra, venda e conclusão de missão.
+- A reprodução pode ser ligada ou desligada pelo menu.
+- Em testes com entrada redirecionada, os sons ficam desativados.
+
+## Regras e decisões de implementação
+
+Esta seção registra algumas escolhas feitas durante o desenvolvimento. Os valores que não eram definidos pelos enunciados foram adotados como regras do projeto.
+
+### Limites e estrutura dos dados
+
+- O cadastro suporta até 20 personagens (`CADASTRO_MAX_PERSONAGENS`).
+- Cada inventário aceita até 50 itens e 50 espaços ocupados (`INVENTARIO_MAX_ITENS` e `INVENTARIO_MAX_ESPACOS`).
+- Raça, classe, tipo de item, espaço de equipamento e códigos de retorno são representados por `enum`.
+- O cadastro de personagens é passado por parâmetro; não há variável global para armazenar as fichas.
+- Após uma remoção, os registros permanecem contíguos.
+- Os atributos totais são calculados quando necessário, sem manter uma cópia permanente dos valores derivados.
+
+### Equipamentos e atributos
+
+- Itens equipados deixam de aparecer no inventário e não consomem seus espaços.
+- Armas de duas mãos bloqueiam as duas mãos. Seu bônus é contado apenas uma vez.
+- A arma principal é a da mão direita; se ela estiver vazia, é usada a da mão esquerda.
+- Sem arma equipada, o personagem ataca com `1d2`.
+- Antes de trocar um equipamento, o programa verifica se o item antigo pode voltar ao inventário. Assim, a operação não deixa o personagem em um estado incompleto.
+- O PV inicial no combate considera o menor valor entre os PV atuais da ficha e os PV máximos totais com equipamentos. Se os PV máximos ficarem abaixo de 1, é usado o mínimo de 1.
+
+### Bestiário e encontros
+
+- Como o TP-2 não especificava faixas para alguns atributos, foram adotados estes limites: CA de 0 a 9, THAC0 de 9 a 20, inteligência de 0 a 15, moral de 6 a 20 e XP de 1 a 9999.
+- O cadastro e a edição de monstros usam o mesmo formato chave=valor do arquivo. Na edição, é possível partir de um monstro existente e alterar apenas os campos necessários.
+- O poder do grupo é recalculado antes de cada geração de encontro.
+- A escolha de proposta recebe o número mostrado no menu (1 a 3) e armazena o índice correspondente (0 a 2).
+- O sorteio de monstros respeita os pesos definidos no projeto. A geração não reduz a quantidade sorteada para forçar um encontro dentro da faixa de poder.
+
+### Combate
+
+- A iniciativa de personagens é `1d20 + iniciativa total`; a de monstros é `1d20`. Ela é sorteada uma única vez por combate.
+- Em caso de empate, agem primeiro os personagens; depois, o menor ID e o menor número de exemplar definem a ordem.
+- O acerto é calculado por `d20 + bônus >= defesa`. Um resultado natural 1 sempre erra e um 20 natural sempre acerta.
+- Para monstros, o bônus de ataque é `20 - THAC0` e a defesa é `20 - CA`.
+- Personagens com 0 PV entram como derrotados, não agem e não podem ser escolhidos como alvos.
+- O combate termina quando um dos lados fica sem combatentes ativos ou quando alcança 100 rodadas.
+- Ao final, o Mestre escolhe se aplica os PV restantes às fichas ou descarta o resultado. Essa decisão é feita uma única vez por combate.
+- Enquanto um combate estiver em andamento, alterações e remoções de personagens ou monstros ficam bloqueadas para evitar que os dados usados pelo combate sejam invalidados.
+- Moral e fuga não faziam parte da implementação original do TP-4. As regras adicionais de fuga foram definidas para o projeto.
+
+### Itens, economia e progressão
+
+- Armas exigem um dado de dano válido, como `1d6` ou `1d8+1`. Itens que não são armas devem ter dano zerado.
+- Itens podem ter bônus inteiros, inclusive negativos.
+- O bônus temporário dura até o fim do próximo combate e entra no cálculo dos atributos totais sem alterar os valores-base da ficha.
+- O veneno usado fora de combate não reduz os PV abaixo de 1.
+- A recompensa em moedas por vitória é calculada a partir do XP dos monstros derrotados.
+- O nível seguinte exige `100 × nível atual` pontos de experiência. Ao subir de nível, o personagem recebe +4 PV máximos, +1 poder e +1 em ataque (nível par) ou defesa (nível ímpar), respeitando os limites da ficha.
+- Usar uma arma de uma mão na mão não preferida reduz ataque e defesa em 20%, com arredondamento desfavorável ao personagem e mínimo de 1. O programa pede confirmação antes de equipá-la.
+
+## Validações e cuidados
+
+Algumas correções foram feitas durante a revisão do projeto:
+
+- A leitura de inteiros usa `strtol` e verifica a linha inteira. Entradas como `12abc`, vazias ou fora do limite são recusadas.
+- Nomes vazios, compostos apenas por espaços ou maiores que o limite não são aceitos.
+- Raça, classe, tipo de item, espaço, nível, PV, ataque, defesa, iniciativa, poder, espaços e dano são validados durante a digitação.
+- A edição de monstros recusa chaves ou valores inválidos sem alterar o registro.
+- IDs de itens não podem se repetir entre a bolsa e os equipamentos.
+- Nomes de personagens com `;` são gravados com vírgula para não quebrar o formato do arquivo.
+
+## Testes e entregas acadêmicas
+
+### TP-1 — Personagens e inventário
+
+- [x] Estrutura de personagem com os campos obrigatórios.
+- [x] Cadastro em vetor estático, com quantidade e limite de 20.
+- [x] Validação dos campos da ficha.
+- [x] CRUD com ID único e remoção contígua.
+- [x] Estrutura de item e inventário com limite de 50 espaços.
+- [x] Inserção, busca, remoção, listagem e cálculo de ocupação.
+- [x] Equipamentos fixos e compatibilidade entre item e espaço.
+- [x] Regra de arma de duas mãos.
+- [x] Verificação de espaço antes de desequipar.
+- [x] Cálculo dos atributos totais com base nos itens equipados.
+- [x] Interface pública em `personagem.h` e implementação em `personagem.c`.
+- [x] Menus e leitura com `fgets`, sem uso de `gets`.
+
+### TP-2 — Bestiário
+
+- [x] Enums e conversões entre texto e enum.
+- [x] Estruturas de dados de monstros, ataques, movimentos e habilidades.
+- [x] Conversão, validação e rolagem de dados.
+- [x] Bestiário com até 100 monstros.
+- [x] Leitura de arquivo com tratamento de comentários, linhas vazias e CRLF.
+- [x] Rejeição de registros inválidos com diagnóstico.
+- [x] Salvamento e recarregamento do bestiário.
+- [x] CRUD e consultas por terreno e período.
+- [x] Testes de busca, remoção, filtros, dados inválidos, arquivo inexistente e salvamento.
+
+### TP-3 — Grupos e encontros
+
+- [x] Grupo de 1 a 6 personagens, sem repetição.
+- [x] Cálculo do poder do grupo.
+- [x] Semente única e semente fixa para testes.
+- [x] Cálculo das faixas de dificuldade.
+- [x] Compatibilidade e filtragem de monstros.
+- [x] Sorteio ponderado.
+- [x] Cálculo do poder do encontro.
+- [x] Geração de propostas distintas e escolha pelo Mestre.
+- [x] Testes de faixas, filtros, sorteio, propostas repetidas e escolhas válidas e inválidas.
+
+### TP-4 — Combate
+
+- [x] Dano de armas e ataque desarmado.
+- [x] Preparação do combate e criação dos exemplares de monstros.
+- [x] Rolagem de PV e iniciativa.
+- [x] Ordem de combate com desempate determinístico.
+- [x] Regras de acerto, dano e derrota.
+- [x] Seleção de alvos ativos.
+- [x] Ataques de personagens e ataques múltiplos de monstros.
+- [x] Execução de turnos, rodadas e encerramento.
+- [x] Histórico, alertas e resumo do combate.
+- [x] Atualização das fichas após o encerramento.
+- [x] Testes dos casos previstos no enunciado, com as limitações registradas abaixo.
+- [x] Extensões: aplicação ou descarte dos efeitos nas fichas e geração de relatório em arquivo.
+
+## Pontos que ainda precisam de atenção
+
+Algumas partes ainda têm limitações conhecidas:
+
+- **Habilidades especiais:** aparecem como alertas no resumo, mas não são executadas automaticamente.
+- **Geração de encontros:** como a quantidade sorteada não é truncada, algumas combinações são rejeitadas por ultrapassar a faixa de poder. O exemplo de cinco Goblins com poder 36 é validado no cálculo, mas nem sempre é gerado pelo sorteio. Grupos com poder muito alto também podem não receber propostas, devido aos limites de espécies e monstros.
+- **Windows e UTF-8:** o arquivo do bestiário usa UTF-8 e CRLF. Em consoles sem UTF-8, alguns acentos podem aparecer incorretamente.
+- **Formato dos dados:** o enunciado menciona `bestiario.txt`, mas o projeto utiliza `DadosBestiario.txt`.
+- **Faixas do TP-2:** os limites de CA, THAC0, inteligência, moral e XP foram definidos pelo projeto porque o enunciado não os especificava.
+- **Poder do grupo no TP-3:** o campo `poderTotal` foi mantido porque o enunciado exige sua existência. Ele é recalculado antes da geração de encontros.
+- **XP no TP-4:** o resumo apresenta a soma do XP dos monstros derrotados. A divisão entre os personagens é feita nas funcionalidades adicionais de progressão.
+- **Padrão de nomes:** o código mistura dois estilos de nome de função. Alguns módulos usam `modulo_acao` (ex.: `cadastro_buscar_por_id`, `historia_conclui_principal`) e outros usam camelCase (ex.: `carregaBestiario`, `preparaCombate`, `inicializaEstadoSalvo`). Foi uma falha minha de padronização ao longo dos TPs; o comportamento não muda, mas a ideia é unificar numa próxima versão.
+
+## Histórico de alterações importantes
+
+Durante a revisão e a implementação das extensões, foram corrigidos problemas que podiam causar perda de dados ou resultados errados:
+
+- A leitura de inteiros passou a rejeitar caracteres extras depois do número.
+- Entradas longas ou vazias passaram a ser recusadas, em vez de serem truncadas.
+- A validação passou a acontecer durante a digitação, com nova solicitação quando necessário.
+- A troca de equipamentos passou a verificar o espaço disponível antes de alterar a ficha.
+- A cura em combate passou a respeitar o PV máximo-base ao atualizar o arquivo.
+- O salvamento passou a tratar o caractere `;` nos nomes.
+- O resumo de combate é descartado quando alterações posteriores poderiam fazer suas referências apontarem para fichas diferentes.
+
+---
+
+**Observação:** este README descreve a versão atual do projeto. Para conhecer o fluxo de utilização pelos menus, consulte também o arquivo `WALKTHROUGH.md`.

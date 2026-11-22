@@ -35,8 +35,8 @@ const char *periodoParaTexto(Periodo periodo) {
 const char *resultadoEncontroParaTexto(ResultadoEncontro resultado) {
     switch (resultado) {
         case ENCONTRO_OK: return "Operacao realizada com sucesso.";
-        case ENCONTRO_PARCIAL: return "Menos de tres propostas distintas foram encontradas dentro do limite de tentativas.";
-        case ENCONTRO_NENHUMA_PROPOSTA: return "Nenhuma proposta valida foi encontrada dentro do limite de tentativas.";
+        case ENCONTRO_PARCIAL: return "Menos de tres propostas distintas couberam na faixa de poder (nao e erro: o sorteio e aleatorio e a faixa pode ser estreita para os monstros elegiveis). Gere novamente ou mude terreno/periodo/dificuldade.";
+        case ENCONTRO_NENHUMA_PROPOSTA: return "Nenhuma proposta coube na faixa de poder (nao e erro: os monstros elegiveis podem ser fortes ou fracos demais para a faixa). Gere novamente ou mude terreno/periodo/dificuldade.";
         case ENCONTRO_SEM_CANDIDATOS: return "Nenhum monstro elegivel para o contexto.";
         case ENCONTRO_GRUPO_INVALIDO: return "Grupo vazio ou com poder invalido.";
         case ENCONTRO_CONTEXTO_INVALIDO: return "Terreno, periodo ou dificuldade invalidos.";

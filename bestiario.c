@@ -1,3 +1,5 @@
+#include "texto.h"
+
 #include "bestiario.h"
 
 #include <ctype.h>
@@ -157,7 +159,9 @@ void listaMonstros(const Bestiario *b) {
     }
     printf("Quantidade cadastrada: %d/%d\n", b->quantidade, MAX_MONSTROS);
     for (i = 0; i < b->quantidade; i++) {
-        printf("%3d | %-24s | %-11s | %-16s | poder base %d\n", b->monstros[i].id, b->monstros[i].nome,
+        printf("%3d | ", b->monstros[i].id);
+        texto_imprime_alinhado(stdout, b->monstros[i].nome, 24);
+        printf(" | %-11s | %-16s | poder base %d\n",
                frequenciaParaTexto(b->monstros[i].frequencia), atividadeParaTexto(b->monstros[i].atividade),
                b->monstros[i].poder.poderBase);
     }

@@ -7,6 +7,6 @@
 #define ARQUIVO_BESTIARIO_SAIDA "bestiario-saida.txt"
 
 void carregarBestiarioInicial(Bestiario *b);
-void menuBestiario(Bestiario *b);
+void menuBestiario(Bestiario *b, int estruturaBloqueada);
 
 #endif

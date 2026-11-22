@@ -120,7 +120,17 @@ void inventario_listar(const Inventario *inventario) {
 
     for (i = 0; i < inventario->quantidade; i++) {
         const Item *item = &inventario->itens[i];
-        printf("ID %d | %s | %s | espacos %d | atk %+d def %+d vida %+d ini %+d poder %d\n",
+        char dano[32] = "-";
+        if (validaDado(item->dano)) {
+            dadoParaTexto(item->dano, dano, sizeof(dano));
+        }
+        if (item->tipo == TIPO_ITEM_CONSUMIVEL) {
+            printf("ID %d | %s | Consumivel (%s) | espacos %d | atk %+d def %+d ini %+d | dado %s | preco %d\n",
+                   item->id, item->nome, efeito_item_para_texto(item->efeito), item->espacos, item->bonus_ataque,
+                   item->bonus_defesa, item->bonus_iniciativa, dano, item->preco);
+            continue;
+        }
+        printf("ID %d | %s | %s | espacos %d | atk %+d def %+d vida %+d ini %+d poder %d | dano %s",
                item->id,
                item->nome,
                tipo_item_para_texto(item->tipo),
@@ -129,7 +139,12 @@ void inventario_listar(const Inventario *inventario) {
                item->bonus_defesa,
                item->bonus_vida,
                item->bonus_iniciativa,
-               item->poder);
+               item->poder,
+               dano);
+        if (item->mao != MAO_QUALQUER) {
+            printf(" | %s", mao_preferida_para_texto(item->mao));
+        }
+        printf("\n");
     }
 }
 

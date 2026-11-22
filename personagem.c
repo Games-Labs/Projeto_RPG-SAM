@@ -23,6 +23,7 @@ static ItemEquipado *obter_slot(Equipamentos *equipamentos, SlotEquipamento slot
         case SLOT_CINTO: return &equipamentos->cinto;
         case SLOT_MAO_DIREITA: return &equipamentos->mao_direita;
         case SLOT_MAO_ESQUERDA: return &equipamentos->mao_esquerda;
+        case SLOT_RUNA: return &equipamentos->runa;
         default: return 0;
     }
 }
@@ -44,6 +45,7 @@ static int tipo_compativel_com_slot(TipoItem tipo, SlotEquipamento slot) {
         case SLOT_MAO_DIREITA:
         case SLOT_MAO_ESQUERDA:
             return tipo == TIPO_ITEM_ARMA_UMA_MAO || tipo == TIPO_ITEM_ARMA_DUAS_MAOS;
+        case SLOT_RUNA: return tipo == TIPO_ITEM_RUNA;
         default: return 0;
     }
 }
@@ -67,7 +69,7 @@ int classe_eh_valida(Classe classe) {
 }
 
 int slot_eh_valido(SlotEquipamento slot) {
-    return slot >= SLOT_ELMO && slot <= SLOT_MAO_ESQUERDA;
+    return slot >= SLOT_ELMO && slot <= SLOT_RUNA;
 }
 
 const char *raca_para_texto(Raca raca) {
@@ -104,6 +106,7 @@ const char *slot_para_texto(SlotEquipamento slot) {
         case SLOT_CINTO: return "Cinto";
         case SLOT_MAO_DIREITA: return "Mao direita";
         case SLOT_MAO_ESQUERDA: return "Mao esquerda";
+        case SLOT_RUNA: return "Runa";
         default: return "Slot desconhecido";
     }
 }
@@ -119,6 +122,8 @@ const char *resultado_operacao_para_texto(ResultadoOperacao resultado) {
         case RESULTADO_ITEM_INCOMPATIVEL: return "Item incompativel com a posicao escolhida.";
         case RESULTADO_ITEM_NAO_ENCONTRADO: return "Item nao encontrado.";
         case RESULTADO_CONFLITO_ARMA_DUAS_MAOS: return "Conflito com arma de duas maos.";
+        case RESULTADO_ITEM_NAO_UTILIZAVEL: return "Este item nao pode ser usado. Apenas consumiveis sao usados.";
+        case RESULTADO_MOEDAS_INSUFICIENTES: return "Moedas insuficientes ou acima do limite.";
         default: return "Resultado desconhecido.";
     }
 }
@@ -203,20 +208,24 @@ int personagem_validar_dados_basicos(const Personagem *personagem) {
         && strlen(personagem->nome) < PERSONAGEM_NOME_TAMANHO
         && raca_eh_valida(personagem->raca)
         && classe_eh_valida(personagem->classe)
-        && personagem->nivel >= 1
-        && personagem->nivel <= 20
-        && personagem->pontos_vida_maximos >= 1
-        && personagem->pontos_vida_maximos <= 999
+        && personagem->nivel >= PERSONAGEM_NIVEL_MINIMO
+        && personagem->nivel <= PERSONAGEM_NIVEL_MAXIMO
+        && personagem->pontos_vida_maximos >= PERSONAGEM_PV_MINIMO
+        && personagem->pontos_vida_maximos <= PERSONAGEM_PV_MAXIMO
         && personagem->pontos_vida_atuais >= 0
         && personagem->pontos_vida_atuais <= personagem->pontos_vida_maximos
-        && personagem->ataque >= 0
-        && personagem->ataque <= 30
-        && personagem->defesa >= 1
-        && personagem->defesa <= 30
-        && personagem->iniciativa >= -5
-        && personagem->iniciativa <= 20
-        && personagem->poder >= 1
-        && personagem->poder <= 100;
+        && personagem->ataque >= PERSONAGEM_ATAQUE_MINIMO
+        && personagem->ataque <= PERSONAGEM_ATAQUE_MAXIMO
+        && personagem->defesa >= PERSONAGEM_DEFESA_MINIMA
+        && personagem->defesa <= PERSONAGEM_DEFESA_MAXIMA
+        && personagem->iniciativa >= PERSONAGEM_INICIATIVA_MINIMA
+        && personagem->iniciativa <= PERSONAGEM_INICIATIVA_MAXIMA
+        && personagem->poder >= PERSONAGEM_PODER_MINIMO
+        && personagem->poder <= PERSONAGEM_PODER_MAXIMO
+        && personagem->moedas >= 0
+        && personagem->moedas <= PERSONAGEM_MOEDAS_MAXIMO
+        && personagem->experiencia >= 0
+        && personagem->experiencia <= PERSONAGEM_XP_MAXIMO;
 }
 
 ResultadoOperacao cadastro_cadastrar(CadastroPersonagens *cadastro, Personagem personagem) {
@@ -255,6 +264,11 @@ ResultadoOperacao cadastro_alterar(CadastroPersonagens *cadastro, int id_atual, 
 
     novos_dados.inventario = cadastro->personagens[indice].inventario;
     novos_dados.equipamentos = cadastro->personagens[indice].equipamentos;
+    novos_dados.moedas = cadastro->personagens[indice].moedas;
+    novos_dados.experiencia = cadastro->personagens[indice].experiencia;
+    novos_dados.bonus_temporario_ataque = cadastro->personagens[indice].bonus_temporario_ataque;
+    novos_dados.bonus_temporario_defesa = cadastro->personagens[indice].bonus_temporario_defesa;
+    novos_dados.bonus_temporario_iniciativa = cadastro->personagens[indice].bonus_temporario_iniciativa;
     cadastro->personagens[indice] = novos_dados;
     return RESULTADO_OK;
 }
@@ -294,11 +308,35 @@ void cadastro_listar(const CadastroPersonagens *cadastro) {
     }
 }
 
+static int id_esta_equipado(const Personagem *personagem, int id_item) {
+    int slot;
+
+    for (slot = SLOT_ELMO; slot <= SLOT_RUNA; slot++) {
+        const ItemEquipado *equipado = obter_slot_const(&personagem->equipamentos, (SlotEquipamento)slot);
+        if (equipado != 0 && equipado->ocupado && equipado->item.id == id_item) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+static ResultadoOperacao devolver_ao_inventario(Personagem *personagem, Item item) {
+    ResultadoInventario resultado = inventario_adicionar_item(&personagem->inventario, item);
+
+    if (resultado == INVENTARIO_OK) {
+        return RESULTADO_OK;
+    }
+    return resultado == INVENTARIO_ID_DUPLICADO ? RESULTADO_ID_DUPLICADO : RESULTADO_INVENTARIO_SEM_ESPACO;
+}
+
 ResultadoOperacao personagem_adicionar_item(Personagem *personagem, Item item) {
     ResultadoInventario resultado;
 
     if (personagem == 0) {
         return RESULTADO_DADOS_INVALIDOS;
+    }
+    if (item_validar(&item) && id_esta_equipado(personagem, item.id)) {
+        return RESULTADO_ID_DUPLICADO;
     }
 
     resultado = inventario_adicionar_item(&personagem->inventario, item);
@@ -399,6 +437,7 @@ ResultadoOperacao personagem_equipar_item(Personagem *personagem, int id_item, S
 
 ResultadoOperacao personagem_desequipar_item(Personagem *personagem, SlotEquipamento slot) {
     ItemEquipado *origem;
+    ResultadoOperacao devolucao;
     Item item;
 
     if (personagem == 0 || !slot_eh_valido(slot)) {
@@ -411,7 +450,10 @@ ResultadoOperacao personagem_desequipar_item(Personagem *personagem, SlotEquipam
         if (inventario_obter_ocupacao(&personagem->inventario) + item.espacos > INVENTARIO_MAX_ESPACOS) {
             return RESULTADO_INVENTARIO_SEM_ESPACO;
         }
-        inventario_adicionar_item(&personagem->inventario, item);
+        devolucao = devolver_ao_inventario(personagem, item);
+        if (devolucao != RESULTADO_OK) {
+            return devolucao;
+        }
         personagem->equipamentos.mao_direita.ocupado = 0;
         personagem->equipamentos.mao_esquerda.ocupado = 0;
         personagem->equipamentos.arma_duas_maos_equipada = 0;
@@ -428,9 +470,227 @@ ResultadoOperacao personagem_desequipar_item(Personagem *personagem, SlotEquipam
         return RESULTADO_INVENTARIO_SEM_ESPACO;
     }
 
-    inventario_adicionar_item(&personagem->inventario, item);
+    devolucao = devolver_ao_inventario(personagem, item);
+    if (devolucao != RESULTADO_OK) {
+        return devolucao;
+    }
     origem->ocupado = 0;
     return RESULTADO_OK;
+}
+
+ResultadoOperacao personagem_consumir_item(Personagem *personagem, int id_item, int *pv_atuais, int pv_maximos,
+                                           UsoItem *uso) {
+    const Item *guardado;
+    UsoItem local;
+    int pontos;
+
+    if (personagem == 0 || pv_atuais == 0 || pv_maximos < 1) {
+        return RESULTADO_DADOS_INVALIDOS;
+    }
+    guardado = inventario_buscar_item_por_id(&personagem->inventario, id_item);
+    if (guardado == 0) {
+        return RESULTADO_ITEM_NAO_ENCONTRADO;
+    }
+    if (guardado->tipo != TIPO_ITEM_CONSUMIVEL || !efeito_item_eh_valido(guardado->efeito)) {
+        return RESULTADO_ITEM_NAO_UTILIZAVEL;
+    }
+
+    local.item = *guardado;
+    local.efeito_aplicado = local.item.efeito;
+    local.pontos = 0;
+    if (local.efeito_aplicado == EFEITO_SUSPEITA) {
+        local.efeito_aplicado = sorteiaInteiro(1, 100) <= ITEM_CHANCE_SUSPEITA_BOA ? EFEITO_CURA : EFEITO_VENENO;
+    }
+
+    if (local.efeito_aplicado == EFEITO_BONUS) {
+        personagem->bonus_temporario_ataque += local.item.bonus_ataque;
+        personagem->bonus_temporario_defesa += local.item.bonus_defesa;
+        personagem->bonus_temporario_iniciativa += local.item.bonus_iniciativa;
+    } else {
+        pontos = rolaDado(local.item.dano);
+        if (pontos < 0) {
+            pontos = 0;
+        }
+        if (local.efeito_aplicado == EFEITO_CURA) {
+            if (*pv_atuais + pontos > pv_maximos) {
+                pontos = pv_maximos - *pv_atuais;
+            }
+            if (pontos < 0) {
+                pontos = 0;
+            }
+            *pv_atuais += pontos;
+        } else {
+            if (*pv_atuais - pontos < PERSONAGEM_PV_MINIMO_VENENO) {
+                pontos = *pv_atuais - PERSONAGEM_PV_MINIMO_VENENO;
+            }
+            if (pontos < 0) {
+                pontos = 0;
+            }
+            *pv_atuais -= pontos;
+        }
+        local.pontos = pontos;
+    }
+
+    inventario_remover_item(&personagem->inventario, id_item, 0);
+    if (uso != 0) {
+        *uso = local;
+    }
+    return RESULTADO_OK;
+}
+
+ResultadoOperacao personagem_usar_item(Personagem *personagem, int id_item, UsoItem *uso) {
+    int pv_maximos;
+
+    if (personagem == 0) {
+        return RESULTADO_DADOS_INVALIDOS;
+    }
+    pv_maximos = personagem->pontos_vida_maximos;
+    return personagem_consumir_item(personagem, id_item, &personagem->pontos_vida_atuais, pv_maximos, uso);
+}
+
+void personagem_descrever_uso(const Personagem *personagem, const UsoItem *uso, char *destino, int tamanho) {
+    if (destino == 0 || tamanho <= 0) {
+        return;
+    }
+    if (personagem == 0 || uso == 0) {
+        destino[0] = '\0';
+        return;
+    }
+    if (uso->efeito_aplicado == EFEITO_CURA) {
+        snprintf(destino, (size_t)tamanho, "%s usou %s e recuperou %d PV.", personagem->nome, uso->item.nome,
+                 uso->pontos);
+    } else if (uso->efeito_aplicado == EFEITO_VENENO) {
+        snprintf(destino, (size_t)tamanho, "%s usou %s: era veneno! Perdeu %d PV.", personagem->nome,
+                 uso->item.nome, uso->pontos);
+    } else {
+        snprintf(destino, (size_t)tamanho, "%s usou %s: atk %+d def %+d ini %+d ate o fim do proximo combate.",
+                 personagem->nome, uso->item.nome, uso->item.bonus_ataque, uso->item.bonus_defesa,
+                 uso->item.bonus_iniciativa);
+    }
+}
+
+ResultadoOperacao personagem_alterar_moedas(Personagem *personagem, int variacao) {
+    long novo;
+
+    if (personagem == 0) {
+        return RESULTADO_DADOS_INVALIDOS;
+    }
+    novo = (long)personagem->moedas + variacao;
+    if (novo < 0 || novo > PERSONAGEM_MOEDAS_MAXIMO) {
+        return RESULTADO_MOEDAS_INSUFICIENTES;
+    }
+    personagem->moedas = (int)novo;
+    return RESULTADO_OK;
+}
+
+void personagem_limpar_bonus_temporarios(Personagem *personagem) {
+    if (personagem != 0) {
+        personagem->bonus_temporario_ataque = 0;
+        personagem->bonus_temporario_defesa = 0;
+        personagem->bonus_temporario_iniciativa = 0;
+    }
+}
+
+int personagem_xp_proximo_nivel(const Personagem *personagem) {
+    if (personagem == 0 || personagem->nivel < PERSONAGEM_NIVEL_MINIMO) {
+        return PERSONAGEM_XP_BASE_NIVEL;
+    }
+    return PERSONAGEM_XP_BASE_NIVEL * personagem->nivel;
+}
+
+static void sobe_nivel(Personagem *personagem) {
+    int ganho = PERSONAGEM_PV_POR_NIVEL;
+
+    personagem->nivel++;
+    if (ganho > PERSONAGEM_PV_MAXIMO - personagem->pontos_vida_maximos) {
+        ganho = PERSONAGEM_PV_MAXIMO - personagem->pontos_vida_maximos;
+    }
+    personagem->pontos_vida_maximos += ganho;
+    if (personagem->pontos_vida_atuais > 0) {
+        personagem->pontos_vida_atuais += ganho;
+    }
+    if (personagem->poder < PERSONAGEM_PODER_MAXIMO) {
+        personagem->poder++;
+    }
+    if (personagem->nivel % 2 == 0) {
+        if (personagem->ataque < PERSONAGEM_ATAQUE_MAXIMO) {
+            personagem->ataque++;
+        }
+    } else if (personagem->defesa < PERSONAGEM_DEFESA_MAXIMA) {
+        personagem->defesa++;
+    }
+}
+
+int personagem_ganhar_experiencia(Personagem *personagem, int experiencia) {
+    int niveis = 0;
+
+    if (personagem == 0 || experiencia <= 0) {
+        return 0;
+    }
+    if (experiencia > PERSONAGEM_XP_MAXIMO - personagem->experiencia) {
+        experiencia = PERSONAGEM_XP_MAXIMO - personagem->experiencia;
+    }
+    personagem->experiencia += experiencia;
+    while (personagem->nivel < PERSONAGEM_NIVEL_MAXIMO
+           && personagem->experiencia >= personagem_xp_proximo_nivel(personagem)) {
+        personagem->experiencia -= personagem_xp_proximo_nivel(personagem);
+        sobe_nivel(personagem);
+        niveis++;
+    }
+    if (personagem->nivel >= PERSONAGEM_NIVEL_MAXIMO) {
+        personagem->experiencia = 0;
+    }
+    return niveis;
+}
+
+int personagem_item_em_mao_errada(const Item *item, SlotEquipamento slot) {
+    if (item == 0 || item->tipo != TIPO_ITEM_ARMA_UMA_MAO) {
+        return 0;
+    }
+    return (item->mao == MAO_PREFERIDA_DIREITA && slot == SLOT_MAO_ESQUERDA)
+        || (item->mao == MAO_PREFERIDA_ESQUERDA && slot == SLOT_MAO_DIREITA);
+}
+
+int personagem_usa_mao_errada(const Personagem *personagem) {
+    const Equipamentos *equipamentos;
+
+    if (personagem == 0 || personagem->equipamentos.arma_duas_maos_equipada) {
+        return 0;
+    }
+    equipamentos = &personagem->equipamentos;
+    return (equipamentos->mao_direita.ocupado
+            && personagem_item_em_mao_errada(&equipamentos->mao_direita.item, SLOT_MAO_DIREITA))
+        || (equipamentos->mao_esquerda.ocupado
+            && personagem_item_em_mao_errada(&equipamentos->mao_esquerda.item, SLOT_MAO_ESQUERDA));
+}
+
+static int aplicar_penalidade_mao(int valor) {
+    if (valor <= 0) {
+        return valor;
+    }
+    return valor - (valor * ITEM_PENALIDADE_MAO_ERRADA + 99) / 100;
+}
+
+int personagem_proximo_id_item(const Personagem *personagem) {
+    int maior = 0;
+    int slot;
+    int i;
+
+    if (personagem == 0) {
+        return 1;
+    }
+    for (i = 0; i < personagem->inventario.quantidade; i++) {
+        if (personagem->inventario.itens[i].id > maior) {
+            maior = personagem->inventario.itens[i].id;
+        }
+    }
+    for (slot = SLOT_ELMO; slot <= SLOT_RUNA; slot++) {
+        const ItemEquipado *equipado = obter_slot_const(&personagem->equipamentos, (SlotEquipamento)slot);
+        if (equipado != 0 && equipado->ocupado && equipado->item.id > maior) {
+            maior = equipado->item.id;
+        }
+    }
+    return maior + 1;
 }
 
 AtributosTotais personagem_calcular_atributos_totais(const Personagem *personagem) {
@@ -451,6 +711,9 @@ AtributosTotais personagem_calcular_atributos_totais(const Personagem *personage
     totais.iniciativa = personagem->iniciativa;
     totais.pontos_vida_maximos = personagem->pontos_vida_maximos;
     totais.poder = personagem->poder;
+    totais.ataque += personagem->bonus_temporario_ataque;
+    totais.defesa += personagem->bonus_temporario_defesa;
+    totais.iniciativa += personagem->bonus_temporario_iniciativa;
 
     somar_bonus(&personagem->equipamentos.elmo, &totais);
     somar_bonus(&personagem->equipamentos.peitoral, &totais);
@@ -464,8 +727,38 @@ AtributosTotais personagem_calcular_atributos_totais(const Personagem *personage
     if (!personagem->equipamentos.arma_duas_maos_equipada) {
         somar_bonus(&personagem->equipamentos.mao_esquerda, &totais);
     }
+    somar_bonus(&personagem->equipamentos.runa, &totais);
+    if (personagem_usa_mao_errada(personagem)) {
+        totais.ataque = aplicar_penalidade_mao(totais.ataque);
+        totais.defesa = aplicar_penalidade_mao(totais.defesa);
+    }
 
     return totais;
+}
+
+int personagem_obter_arma_principal(const Personagem *personagem, Item *arma) {
+    const ItemEquipado *escolhida;
+
+    if (personagem == 0) {
+        return 0;
+    }
+
+    if (personagem->equipamentos.mao_direita.ocupado) {
+        escolhida = &personagem->equipamentos.mao_direita;
+    } else if (personagem->equipamentos.mao_esquerda.ocupado) {
+        escolhida = &personagem->equipamentos.mao_esquerda;
+    } else {
+        return 0;
+    }
+
+    if (!tipo_item_eh_arma(escolhida->item.tipo) || !validaDado(escolhida->item.dano)) {
+        return 0;
+    }
+
+    if (arma != 0) {
+        *arma = escolhida->item;
+    }
+    return 1;
 }
 
 void personagem_listar_inventario(const Personagem *personagem) {
@@ -495,6 +788,14 @@ void personagem_exibir(const Personagem *personagem) {
            personagem->defesa,
            personagem->iniciativa,
            personagem->poder);
+    printf("Moedas %d | XP %d/%d", personagem->moedas, personagem->experiencia,
+           personagem_xp_proximo_nivel(personagem));
+    if (personagem->bonus_temporario_ataque != 0 || personagem->bonus_temporario_defesa != 0
+        || personagem->bonus_temporario_iniciativa != 0) {
+        printf(" | Bonus temporarios: atk %+d def %+d ini %+d", personagem->bonus_temporario_ataque,
+               personagem->bonus_temporario_defesa, personagem->bonus_temporario_iniciativa);
+    }
+    printf("\n");
 }
 
 static void exibir_slot(const Equipamentos *equipamentos, SlotEquipamento slot) {
@@ -505,10 +806,11 @@ static void exibir_slot(const Equipamentos *equipamentos, SlotEquipamento slot) 
         if (equipamentos->arma_duas_maos_equipada && slot == SLOT_MAO_ESQUERDA) {
             printf("bloqueada por %s\n", equipado->item.nome);
         } else {
-            printf("%s (%s, ID %d)\n",
+            printf("%s (%s, ID %d)%s\n",
                    equipado->item.nome,
                    tipo_item_para_texto(equipado->item.tipo),
-                   equipado->item.id);
+                   equipado->item.id,
+                   personagem_item_em_mao_errada(&equipado->item, slot) ? " [mao errada: -20% ataque e defesa]" : "");
         }
     } else {
         printf("vazio\n");
@@ -524,7 +826,7 @@ void personagem_exibir_equipamentos(const Personagem *personagem) {
     }
 
     printf("Equipamentos de %s:\n", personagem->nome);
-    for (slot = SLOT_ELMO; slot <= SLOT_MAO_ESQUERDA; slot++) {
+    for (slot = SLOT_ELMO; slot <= SLOT_RUNA; slot++) {
         exibir_slot(&personagem->equipamentos, (SlotEquipamento)slot);
     }
 }
@@ -543,4 +845,7 @@ void personagem_exibir_atributos_totais(const Personagem *personagem) {
     printf("Iniciativa: %d\n", totais.iniciativa);
     printf("PV maximos: %d\n", totais.pontos_vida_maximos);
     printf("Poder: %d\n", totais.poder);
+    if (personagem_usa_mao_errada(personagem)) {
+        printf("Arma na mao errada: ataque e defesa ja estao com -%d%%.\n", ITEM_PENALIDADE_MAO_ERRADA);
+    }
 }

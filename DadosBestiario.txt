@@ -1,10 +1,8 @@
 # BESTIARIO DO SISTEMA AUXILIAR DE MESTRE DE RPG
-# Codificacao: UTF-8
 # Cada registro começa com [MONSTRO] e termina com [/MONSTRO].
 # Listas usam virgula; subestruturas usam dois-pontos; elementos compostos usam barra vertical.
 # As descricoes devem permanecer em uma unica linha.
 # Total esperado de registros iniciais: 50.
-# TEM Q IMPLEMENTAR URGENTEMENTE O ABNT POR CAUSA DOS ACENTOS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 [MONSTRO]
 id=1
